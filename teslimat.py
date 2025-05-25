@@ -9,3 +9,5 @@ class Teslimat:
 
     def __repr__(self):
         return f"Teslimat#{self.id} - {self.weight}kg - Öncelik: {self.priority}"
+
+    
