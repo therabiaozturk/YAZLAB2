@@ -1,14 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox
 from veri_uretimi import drone_uret, teslimat_uret, noflyzone_uret, NoFlyZone
-from genetik import genetik_algoritma
+from genetik import genetik_algoritma, fitness_hesapla
 from algoritma import astar, astar_static_graph
 from csp import teslimat_mumkun_mu
 from gorsel import rota_ciz
 from utils import mesafe_hesapla
 from shapely.geometry import LineString, Polygon
 import time
-
 
 def cizgi_nofly_icinden_geciyor_mu(a, b, noflyzones, simdi_saat):
     cizgi = LineString([a, b])
@@ -19,7 +18,6 @@ def cizgi_nofly_icinden_geciyor_mu(a, b, noflyzones, simdi_saat):
         if cizgi.intersects(rect):
             return True
     return False
-
 
 def baslat():
     try:
@@ -37,9 +35,13 @@ def baslat():
         baslangic = time.time()
         ceza_adedi = 0
         toplam_bekleme = 0
+        fitness = 0
+        rota_ids = []
 
         if algoritma == "Genetik":
             rota = genetik_algoritma(drone, teslimatlar, noflyzones, saat)
+            fitness = fitness_hesapla(rota, drone, noflyzones, saat)
+            rota_ids = [t.id for t in rota]
         else:
             uygun_teslimatlar = [t for t in teslimatlar if teslimat_mumkun_mu(drone, t, noflyzones, saat)]
             rota = []
@@ -69,6 +71,7 @@ def baslat():
                             drone.start_pos = t.pos
                 else:
                     ceza_adedi += 1
+            rota_ids = [t.id for t in rota]
 
         bitis = time.time()
 
@@ -78,7 +81,7 @@ def baslat():
         sure = round(bitis - baslangic + toplam_bekleme, 2)
         ceza_puani = ceza_adedi * 1000
 
-        sonuc_yazi = f"""✔️ Tamamlanan Teslimat: %{round(yuzde, 2)}\n⚡ Ortalama Enerji: {round(ort_enerji, 2)} birim\n❌ Ceza Puanı: {ceza_puani} ({ceza_adedi} ihlal)\n⏱️ Süre: {sure} saniye (şarj bekleme dahil)"""
+        sonuc_yazi = f"""✔️ Tamamlanan Teslimat: %{round(yuzde, 2)}\n Ortalama Enerji: {round(ort_enerji, 2)} birim\n❌ Ceza Puanı: {ceza_puani} ({ceza_adedi} ihlal)\n🏁 Fitness Skoru: {round(fitness, 2)}\n📌 En İyi Rota: {rota_ids}\n⏱️ Süre: {sure} saniye (şarj bekleme dahil)"""
         metrikler_label.config(text=sonuc_yazi)
 
         rota_ciz(drone, rota, noflyzones)
@@ -86,11 +89,10 @@ def baslat():
     except Exception as e:
         messagebox.showerror("Hata", f"Bir hata oluştu:\n{e}")
 
-
 # ------------------ ARAYÜZ BAŞLANGIÇ ---------------------
 pencere = tk.Tk()
 pencere.title("Drone Filo Simülasyonu")
-pencere.geometry("420x480")
+pencere.geometry("420x520")
 
 tk.Label(pencere, text="📦 Drone Filo Simülasyonu", font=("Arial", 14, "bold")).pack(pady=10)
 

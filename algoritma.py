@@ -72,7 +72,7 @@ def astar_static_graph(graf, baslangic, hedef):
 
     return None
 
-# ✅ Nokta yasak bölge içinde mi (mevcut kontrol)
+#  Nokta yasak bölge içinde mi (mevcut kontrol)
 def noktada_yasak_var_mi(nokta, noflyzones):
     x, y = nokta
     for zone in noflyzones:
