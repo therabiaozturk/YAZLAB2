@@ -25,8 +25,10 @@ def baslat():
         teslimat_sayisi = int(entry_teslimat.get())
         nofly_sayisi = int(entry_nofly.get())
         algoritma = secili_algoritma.get()
+        veri_turu = secili_veri_turu.get()
         saat = entry_saat.get() or "09:30"
 
+        # Veri türüne göre üretim yapılabilir — istersen burada veri_turu kullan
         dronelar = drone_uret(drone_sayisi)
         teslimatlar = teslimat_uret(teslimat_sayisi)
         noflyzones = noflyzone_uret(nofly_sayisi)
@@ -92,7 +94,7 @@ def baslat():
 # ------------------ ARAYÜZ BAŞLANGIÇ ---------------------
 pencere = tk.Tk()
 pencere.title("Drone Filo Simülasyonu")
-pencere.geometry("420x520")
+pencere.geometry("420x580")
 
 tk.Label(pencere, text="📦 Drone Filo Simülasyonu", font=("Arial", 14, "bold")).pack(pady=10)
 
@@ -116,6 +118,12 @@ tk.Label(pencere, text="Algoritma Seç:").pack()
 secili_algoritma = tk.StringVar(value="Genetik")
 tk.Radiobutton(pencere, text="Genetik Algoritma", variable=secili_algoritma, value="Genetik").pack()
 tk.Radiobutton(pencere, text="A* Algoritması", variable=secili_algoritma, value="A*").pack()
+
+# 💡 Veri türü seçimi (yeni eklendi)
+tk.Label(pencere, text="Veri Türü Seç:").pack()
+secili_veri_turu = tk.StringVar(value="Rastgele")
+tk.Radiobutton(pencere, text="Rastgele Veri", variable=secili_veri_turu, value="Rastgele").pack()
+tk.Radiobutton(pencere, text="Sabit Veri", variable=secili_veri_turu, value="Sabit").pack()
 
 tk.Button(pencere, text="Simülasyonu Başlat", command=baslat, bg="#009E49", fg="white", font=("Arial", 10, "bold")).pack(pady=15)
 
